@@ -6,6 +6,7 @@ Scripts to predict gene expression given PrediXcan models and genotype data.
 
 ```
 $ conda env create -f environment.yml
+$ conda activate predixcan_prediction  # load the environment just built
 $ wget http://www.well.ox.ac.uk/~gav/resources/rbgen_<version>.tgz . # install extra dependency of R package rbgen
 $ R -e "install.packages( 'rbgen_<version>.tgz', repos = NULL )"
 ```
