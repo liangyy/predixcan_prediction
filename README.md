@@ -13,6 +13,8 @@ $ Rscript -e "install.packages( 'rbgen_<version>.tgz', repos = NULL )"
 
 See extra documentation of `rbgen` and `bgen` [here](https://bitbucket.org/gavinband/bgen/wiki/browse/)
 
+**CAUTION**: specifically, we may need to stick with pandas 0.23.4 because of [this issue](https://github.com/theislab/single-cell-tutorial/issues/7).
+
 # Index BGEN
 
 The script relies on `rbgen` which needs your BGEN files being indexed by `bgenix`. 
