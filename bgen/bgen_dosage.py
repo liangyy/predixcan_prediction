@@ -16,11 +16,10 @@ class BGENDosage:
         if bgen_bgi is None:
             self.bgi_path = self.bgen_path + '.bgi'
         else:
-            self.bgi_path = bgen_bgi
+            self.bgi_path = bgen_bgi + '.bgi'
         self.sample_path = sample_path
 
         self.rbgen = importr('rbgen')
-
         with sqlite3.connect(self.bgi_path) as conn:
             self.variants_count = conn.execute('select count(*) from Variant').fetchone()[0]
 
