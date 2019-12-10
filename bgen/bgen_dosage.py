@@ -11,9 +11,12 @@ pandas2ri.activate()
 
 
 class BGENDosage:
-    def __init__(self, bgen_path, sample_path=None):
+    def __init__(self, bgen_path, bgen_bgi=None, sample_path=None):
         self.bgen_path = bgen_path
-        self.bgi_path = self.bgen_path + '.bgi'
+        if bgen_bgi is None:
+            self.bgi_path = self.bgen_path + '.bgi'
+        else:
+            self.bgi_path = bgen_bgi
         self.sample_path = sample_path
 
         self.rbgen = importr('rbgen')

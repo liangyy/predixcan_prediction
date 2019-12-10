@@ -154,8 +154,7 @@ def get_all_dosages_from_bgen(bgen_dir, bgen_prefix, rsids, args):
         if idx > 0:
             del bgen_dosage
             gc.collect()
-
-        bgen_dosage = BGENDosage(os.path.join(bgen_dir, chrfile), sample_path=args.bgens_sample_file)
+        bgen_dosage = BGENDosage(os.path.join(bgen_dir, chrfile), bgen_bgi=os.path.join(args.bgens_bgi_dir, chrfile), sample_path=args.bgens_sample_file)
 
         for variant_info in bgen_dosage.items(n_rows_cached=args.bgens_n_cache, include_rsid=rsids):
             yield variant_info.rsid, variant_info.allele1, variant_info.dosages
@@ -166,6 +165,7 @@ if __name__ == '__main__':
     parser.add_argument('--weights-file', required=True, help="SQLite database with rsid weights.")
     parser.add_argument('--output-file', required=True, help="Predicted expression file from earlier run of PrediXcan")
     parser.add_argument('--bgens-dir', required=True, help="Path to a directory of BGEN files.")
+    parser.add_argument('--bgens-bgi-dir', default=None, help="Path to a directory of BGEN BGI files (the filename should match the corresponding BGEN files).")
     parser.add_argument('--bgens-prefix', default='', help="Prefix of filenames of BGEN files.")
     parser.add_argument('--bgens-sample-file', required=True, help="BGEN sample file.")
     parser.add_argument('--bgens-n-cache', type=int, default=100, help="Number of variants to process at a time.")
@@ -173,6 +173,9 @@ if __name__ == '__main__':
     parser.add_argument('--no-progress-bar', action="store_true", help="Disable progress bar")
 
     args = parser.parse_args()
+    
+    if args.bgens_bgi_dir is None:
+        args.bgens_bgi_dir = args.bgens_dir
 
     check_out_file(args.output_file)
     get_applications_of = GetApplicationsOf(args.weights_file, True)
