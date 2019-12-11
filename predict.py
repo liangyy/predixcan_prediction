@@ -147,7 +147,15 @@ class TranscriptionMatrix:
 
 
 def get_all_dosages_from_bgen(bgen_dir, bgen_prefix, rsids, args):
-    bgen_files = [x for x in sorted(os.listdir(bgen_dir)) if x.startswith(bgen_prefix) and x.endswith(".bgen")]
+    if args.autosomes is True:
+        if '{chr_num}' not in bgen_prefix:
+            print("--bgens-prefix should have {chr_num} if --autosomes are used")
+            sys.exit()
+        candidate_prefix = tuple([ bgen_prefix.format(chr_num = j) for j in range(1, 23) ])
+        bgen_files = [x for x in sorted(os.listdir(bgen_dir)) if x.startswith(candidate_prefix) and x.endswith(".bgen")]
+    else:
+        bgen_files = [x for x in sorted(os.listdir(bgen_dir)) if x.startswith(bgen_prefix) and x.endswith(".bgen")]
+    
     for idx, chrfile in enumerate(bgen_files):
         print("{} Processing {}".format(datetime.datetime.now(), chrfile))
 
@@ -171,6 +179,7 @@ if __name__ == '__main__':
     parser.add_argument('--bgens-n-cache', type=int, default=100, help="Number of variants to process at a time.")
     parser.add_argument('--bgens-writing-cache-size', type=int, default=50, help="BGEN reading cache size in MB.")
     parser.add_argument('--no-progress-bar', action="store_true", help="Disable progress bar")
+    parser.add_argument('--autosomes', action="store_true", help="Use all autosomes 1..22. If set true, --bgens-prefix should contain {chr_num}")
 
     args = parser.parse_args()
     
@@ -183,9 +192,10 @@ if __name__ == '__main__':
 
     unique_rsids = UniqueRsid(args.weights_file)()
     all_dosages = get_all_dosages_from_bgen(args.bgens_dir, args.bgens_prefix, unique_rsids, args)
-
+    
     for rsid, allele, dosage_row in tqdm(all_dosages, total=len(unique_rsids), disable=args.no_progress_bar):
         for gene, weight, ref_allele in get_applications_of(rsid):
             transcription_matrix.update(gene, weight, ref_allele, allele, dosage_row)
-
+    
     transcription_matrix.save()
+
