@@ -94,8 +94,9 @@ class TranscriptionMatrix:
 
             self.D_file = h5py_cache.File(self.output_binary_file, 'w', chunk_cache_mem_size=self.cache_size)
             n_genes_chunk = np.min((self.n_genes, 10))
+            n_samples_chunk = np.min((self.n_genes, 100))
             self.D = self.D_file.create_dataset("pred_expr", shape=(self.n_genes, self.n_samples),
-                                                chunks=(n_genes_chunk, self.n_samples),
+                                                chunks=(n_genes_chunk, n_samples_chunk),
                                                 dtype=np.dtype('float32'), scaleoffset=4, compression='gzip')
 
         if gene in self.gene_index:  # assumes dosage coding 0 to 2
