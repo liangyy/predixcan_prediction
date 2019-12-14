@@ -152,7 +152,15 @@ class TranscriptionMatrix:
 
 
 def get_all_dosages_from_bgen(bgen_dir, bgen_prefix, rsids, args):
-    bgen_files = [x for x in sorted(os.listdir(bgen_dir)) if x.startswith(bgen_prefix) and x.endswith(".bgen")]
+    if args.autosomes is True:
+        if '{chr_num}' not in bgen_prefix:
+            print("--bgens-prefix should have {chr_num} if --autosomes are used")
+            sys.exit()
+        candidate_prefix = tuple([ bgen_prefix.format(chr_num = j) for j in range(1, 23) ])
+        bgen_files = [x for x in sorted(os.listdir(bgen_dir)) if x.startswith(candidate_prefix) and x.endswith(".bgen")]
+    else:
+        bgen_files = [x for x in sorted(os.listdir(bgen_dir)) if x.startswith(bgen_prefix) and x.endswith(".bgen")]
+
     for idx, chrfile in enumerate(bgen_files):
         print("{} Processing {}".format(datetime.datetime.now(), chrfile))
 
@@ -178,6 +186,7 @@ if __name__ == '__main__':
     parser.add_argument('--max-sample-chunk-size', type=int, default=-1, help="Maximum number of chunks on sample axis (column). Set to -1 if do not want to use chunk. Default: -1")
     parser.add_argument('--max-gene-chunk-size', type=int, default=10, help="Maximum number of chunks on gene axis (row). Set to -1 if do not want to use chunk. Default: 10")
     parser.add_argument('--no-progress-bar', action="store_true", help="Disable progress bar")
+    parser.add_argument('--autosomes', action="store_true", help="Use all autosomes 1..22. If set true, --bgens-prefix should contain {chr_num}")
 
     args = parser.parse_args()
     
