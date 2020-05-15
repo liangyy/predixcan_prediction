@@ -226,6 +226,12 @@ if __name__ == '__main__':
     desired_gene_list = load_gene_list(args.gene_list)
     
     unique_rsids = UniqueRsid(args.weights_file)(desired_gene_list)
+    
+    if len(unique_rsids) == 0:
+        print('The genes in gene list do not appear in the predictdb. Exit!')
+        os.remove(args.output_file)
+        sys.exit()
+
     all_dosages = get_all_dosages_from_bgen(args.bgens_dir, args.bgens_prefix, unique_rsids, args)
     
     for rsid, allele, dosage_row in tqdm(all_dosages, total=len(unique_rsids), disable=args.no_progress_bar):
